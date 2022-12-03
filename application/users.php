@@ -33,7 +33,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 include('view/error.php');
             }
         }
-        $result = select_all();
+        $result = select_all_users();
         include('view/user_list.php');
         break;
     case 'POST':

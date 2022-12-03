@@ -23,7 +23,7 @@ function insert_user($name, $email, $surname, $password, $authority_title, $phon
     return $count;
 }
 
-function select_all() {
+function select_all_users() {
     global $db;
     $query = "SELECT * FROM user";
     $result = mysqli_query($db, $query);

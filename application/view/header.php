@@ -11,3 +11,7 @@
     <header>
         <h1>header</h1>
     </header>
+
+    <h2><a href="./rooms.php">номера</a></h2>
+    <h2><a href="./users.php">пользователи</a></h2>
+    <h2><a href="./bookings.php">брони</a></h2>

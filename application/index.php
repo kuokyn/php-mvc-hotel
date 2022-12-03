@@ -1,6 +1,8 @@
 <?php
 require('model/database.php');
-require('model/city_db.php');
+require('model/room_db.php');
+require('model/user_db.php');
+/*require('model/city_db.php');
 $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
 $countrycode = filter_input(INPUT_POST, "countrycode", FILTER_SANITIZE_STRING);
 $district = filter_input(INPUT_POST, "district", FILTER_SANITIZE_STRING);
@@ -57,4 +59,6 @@ switch ($action) {
         include('view/create_read_form.php');
 }
 
+*/
 
+?>
