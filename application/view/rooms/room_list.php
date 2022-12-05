@@ -1,4 +1,4 @@
-<?php include("header.php") ?>
+<?php include(ROOT . "/view/shared/header.php") ?>
 <?php if ($result) { ?>
     <section>
         <table class="table table-striped">
@@ -21,7 +21,7 @@
                        <td>" . $res["room_type_title"] . '</td>
                        
                        <td>
-                           <form class="delete" action="router.php" method="GET">
+                           <form class="delete" action="Router.php" method="GET">
                            <input type="hidden" name="controller" value="users">
                            <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="phone"
@@ -37,4 +37,4 @@
 <?php } else { ?>
     <p>Sorry, no results.</p><br>
 <?php } ?>
-<?php include("footer.php") ?>
+<?php include(ROOT . "/view/shared/footer.php") ?>

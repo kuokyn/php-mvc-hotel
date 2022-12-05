@@ -1,4 +1,4 @@
-<?php include("header.php") ?>
+<?php include("shared/header.php") ?>
 <?php if ($result) { ?>
     <section>
         <h2>Update Or Delete Data</h2>
@@ -40,6 +40,6 @@
 <?php } else { ?>
     <p>Sorry, no results.</p><br>
 <?php } ?>
-<?php include("status.php") ?>
+<?php include("shared/status.php") ?>
     <a href=".">Back to Request Forms</a>
-<?php include("footer.php") ?>
+<?php include("shared/footer.php") ?>

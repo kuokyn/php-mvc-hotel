@@ -1,64 +1,17 @@
 <?php
 require('model/database.php');
-require('model/room_db.php');
-require('model/user_db.php');
-/*require('model/city_db.php');
-$id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
-$countrycode = filter_input(INPUT_POST, "countrycode", FILTER_SANITIZE_STRING);
-$district = filter_input(INPUT_POST, "district", FILTER_SANITIZE_STRING);
-$population = filter_input(INPUT_POST, "population", FILTER_SANITIZE_STRING);
-$action = filter_input(INPUT_POST, "action", FILTER_SANITIZE_STRING);
-if (!$action) {
-    $action = filter_input(INPUT_GET, "action", FILTER_SANITIZE_STRING);
-    if (!$action) {
-        $action = 'create_read_form';
-    }
-}
-$city = filter_input(INPUT_POST, "city", FILTER_SANITIZE_STRING);
-if (!$city) {
-    $city = filter_input(INPUT_GET, "city", FILTER_SANITIZE_STRING);
-}
-switch ($action) {
-    case 'select':
-        if ($city) {
-            $result = select_city_by_name($city);
-            include('view/update_delete_form.php');
-        } else {
-            $error = 'Invalid city data';
-            include('view/error.php');
-        }
-        break;
-    case 'insert':
-        if ($city && $countrycode && $district && $population) {
-            $count = insert_city($city, $countrycode, $district, $population);
-            header("Location: .?action=select&city={$city}&created={$count}");
-        } else {
-            $error = 'Invalid city data';
-            include('view/error.php');
-        }
-        break;
-    case 'update':
-        if ($id && $city && $countrycode && $district && $population) {
-            $count = update_city($id, $city, $countrycode, $district, $population);
-            header("Location: .?action=select&city={$city}&updated={$count}");
-        } else {
-            $error = 'Invalid city data';
-            include('view/error.php');
-        }
-        break;
-    case 'delete':
-        if ($id) {
-            $count = delete_city($id);
-            header("Location: .?deleted={$count}");
-        } else {
-            $error = 'Invalid city data';
-            include('view/error.php');
-        }
-        break;
-    default:
-        include('view/create_read_form.php');
-}
-
+include('view/shared/header.php');
+require('components/Router.php');
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+define('ROOT', dirname(__FILE__));
+$router = new Router();
+$router->run();
+include('view/shared/footer.php');
+/*
+ * 1. Общие настройки (включение-выключение ошибок, установка констант и др.)
+ * 2. Подключение файлов системы
+ * 3. Установка соединения с базой данных
+ * 4. Вызов Router
 */
 
-?>

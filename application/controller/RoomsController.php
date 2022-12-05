@@ -1,6 +1,6 @@
 <?php
-require('model/database.php');
-require('model/room_db.php');
+/*require('../model/database.php');
+require('../model/model_room.php');
 $id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
 $chambers = filter_input(INPUT_POST, "chambers", FILTER_VALIDATE_INT);
 $people = filter_input(INPUT_POST, "people", FILTER_VALIDATE_INT);
@@ -22,14 +22,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if ($_GET['action']=="delete") {
             if ($_GET['id']) {
                 $count = delete_room($id);
-                header("Location: rooms.php");
+                header("Location: RoomsController.php");
             } else {
                 $error = 'Invalid room data';
-                include('view/error.php');
+                include('../view/shared/error.php');
             }
         }
         $result = select_all_rooms();
-        include('view/room_list.php');
+        include('../view/room_list.php');
         break;
     case 'POST':
         if ($id && $chambers && $people && $room_type_title) {
@@ -37,7 +37,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             header("Location: .?action=select&room={$id}&created={$count}");
         } else {
             $error = 'Invalid room data';
-            include('view/error.php');
+            include('../view/shared/error.php');
         }
         break;
     case 'PUT':
@@ -46,7 +46,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             header("Location: .?action=select&room={$id}&updated={$count}");
         } else {
             $error = 'Invalid room data';
-            include('view/error.php');
+            include('../view/shared/error.php');
         }
         break;
     case 'DELETE':
@@ -55,10 +55,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
             header("Location: .");
         } else {
             $error = 'Invalid room data';
-            include('view/error.php');
+            include('../view/shared/error.php');
         }
         break;
     default:
-        include('view/room_list.php');
-}
+        include('../view/room_list.php');
+}*/
 
+class RoomsController
+{
+    public function actionIndex()
+    {
+        return true;
+    }
+}
