@@ -1,30 +1,19 @@
 <?php
 
-include_once(ROOT . '/admin/model/Booking.php');
-include_once(ROOT . '/admin/model/User.php');
-class BookingsController
-{
+include_once(ROOT . '/admin/model/Payment.php');
 
+class PaymentController
+{
     public function processMethod()
     {
-        
-        $isSet = isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"]);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
-                    $result = Booking::getBookingList();
-                }
-                else if (isset($_SESSION["login"])) {
-                    $result = $this->getMyBookings($_SESSION["login"]);
-                }
-                else {
-                    $result = Booking::getBookingById($_GET["id"]);
-                }
+                $result = Payment::getPaymentList();
                 echo json_encode($result);
                 break;
-
             case 'POST':
-                if ($isSet) {
+                
+                if (isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"])) {
                     $booking = $this->createBooking();
                     if ($booking) {
                         http_response_code(201);
@@ -46,8 +35,9 @@ class BookingsController
                 break;
 
             case 'PUT':
+                
                 if ($_GET["id"] == $_POST["id"] && isset($_GET["id"])) {
-                    if ($isSet) {
+                    if (isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"])) {
                         $booking = $this->updateBooking();
                         if ($booking) {
                             http_response_code(201);
@@ -75,18 +65,15 @@ class BookingsController
                 break;
             case 'DELETE':
                 $id = $_GET["id"];
-                $deleted = Room::deleteRoom($id);
-                if ($deleted) {
-                    echo json_encode([
-                        "message" => "Room $id was NOT deleted",
-                        "deleted" => $deleted
-                    ]);
+                if ($id) {
+                    $rows = Booking::deleteBooking($id);
                 } else {
-                    echo json_encode([
-                        "message" => "Room $id was deleted",
-                        "deleted" => $deleted
-                    ]);
+                    echo "error";
                 }
+                echo json_encode([
+                    "message" => "Booking $id was deleted",
+
+                ]);
                 break;
             default:
                 http_response_code(405);
@@ -122,10 +109,5 @@ class BookingsController
         $room_id= $_POST["room_id"];
         $user_id = $_POST["user_id"];
         return Booking::updateBooking($id, $room_id, $user_id, $check_in_date, $check_out_date, $people);
-    }
-
-    public function getMyBookings($login) {
-        $user = User::getUserByPhone($login);
-        return Booking::getBookingsByUserId($user["id"]);
     }
 }

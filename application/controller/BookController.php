@@ -1,35 +1,31 @@
 <?php
 
 include_once(ROOT . '/admin/model/Booking.php');
-include_once(ROOT . '/admin/model/User.php');
-class BookingsController
+
+class BookController
 {
 
     public function processMethod()
     {
-        
         $isSet = isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"]);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
-                    $result = Booking::getBookingList();
+                if (isset($_SESSION["login"])) {
+                    include_once (ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/view/booking/book_form.php');
                 }
-                else if (isset($_SESSION["login"])) {
-                    $result = $this->getMyBookings($_SESSION["login"]);
-                }
-                else {
-                    $result = Booking::getBookingById($_GET["id"]);
-                }
-                echo json_encode($result);
+                else
+                    header("Location: /login");
                 break;
-
             case 'POST':
+                include_once (ROOT . '/view/shared/header.php');
+                include_once (ROOT . '/view/booking/book_form.php');
                 if ($isSet) {
                     $booking = $this->createBooking();
                     if ($booking) {
                         http_response_code(201);
                         echo json_encode([
-                            "message" => "Booking ". $booking->{'id'}. " was created",
+                            "message" => "Booking ". $booking['id']. " was created",
                             "created" => $booking
                         ]);
                     }
@@ -46,6 +42,7 @@ class BookingsController
                 break;
 
             case 'PUT':
+                include_once (ROOT . '/view/shared/header.php');
                 if ($_GET["id"] == $_POST["id"] && isset($_GET["id"])) {
                     if ($isSet) {
                         $booking = $this->updateBooking();
@@ -74,6 +71,7 @@ class BookingsController
                 }
                 break;
             case 'DELETE':
+                include_once (ROOT . '/view/shared/header.php');
                 $id = $_GET["id"];
                 $deleted = Room::deleteRoom($id);
                 if ($deleted) {
@@ -122,10 +120,5 @@ class BookingsController
         $room_id= $_POST["room_id"];
         $user_id = $_POST["user_id"];
         return Booking::updateBooking($id, $room_id, $user_id, $check_in_date, $check_out_date, $people);
-    }
-
-    public function getMyBookings($login) {
-        $user = User::getUserByPhone($login);
-        return Booking::getBookingsByUserId($user["id"]);
     }
 }

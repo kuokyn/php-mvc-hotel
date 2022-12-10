@@ -1,36 +1,8 @@
 <?php
-/*switch ($_SERVER['REQUEST_METHOD']) {
-    case 'GET':
-
-        switch ($_GET['controller']) {
-            case 'users':
-                include("../controller/UsersController.php");
-                break;
-            case 'rooms':
-                include("../controller/RoomsController.php");
-                break;
-            case 'bookings':
-                include("../controller/BookingsController.php");
-                break;
-            default:
-                break;
-        }
-    default:
-        include('../view/index.php');}*/
-
-/*
- * 1. Анализ запроса и определение контроллера, который будет обрабатывать этот запрос
-(если строка запроса - /news, то обрабатывать этот запрос должен контроллер NewsController.php,
-если стока запроса - /article, то обрабатывать этот запрос должен контроллер ArticleController.php и т. д.)
- * 2. Затем роутер подключает файл с классом контроллера
- * 3. После этого он передает ему управление (например - NewsController.php )
-*/
 
 class Router {
-    private $routes;
     public function __construct() {
         $routesPath = ROOT . '/components/routes.php';
-        $this->routes = include($routesPath);
     }
 
     // метод будет принимать управление от фронтконтроллера
@@ -38,157 +10,118 @@ class Router {
     {
         $uri = $this->getURI();
         $segments = explode('/', $uri);
-        $entity = explode('&', array_shift($segments));
-        switch ($entity[0]) {
-            case 'bookings':
-                include_once (ROOT . '/controller/BookingsController.php');
-                $controller= new BookingsController();
-                $controller->processMethod();
-                break;
-            case '':
-                include_once (ROOT . '/main.php');
-                break;
-            default:
-                include_once (ROOT . '/view/shared/error.php');
-                break;
-        }
-        /*foreach($this->routes as $uriPattern => $path)
-        {
-            // Получаем:  news -> news/index products -> products/list
-            if(preg_match("~$uriPattern~", $uri))
-            {
-                // Получаем внутренний путь из внешнего согласно правилу
-                $internalRoute = preg_replace("~$uriPattern,~", $path, $uri);
-                // echo '<br><br>Нужно сформировать: ' . $internalRoute;
-
-                // Определяем контроллер, action, параметры
-                // Контроллер и action мы определяем с помощью старого кода
-                // ($internalRoute вместо $path)
-
-                // Если есть совпадение, определить какой контроллер и
-                // action обрабатывают запрос
-                $segments = explode('/', $internalRoute);
-
-                // Получаем имя контроллера:
-                $controllerName = array_shift($segments) . 'Controller';
-
-                // делает первую букву строки заглавной
-                $controllerName = ucfirst($controllerName);
-
-                // Точно также получаем название экшена:
-                $actionName = 'action' . ucfirst(array_shift($segments));
-                $uri1 = explode('/', $uri);
-                if (sizeof($uri1)==1) {
-                    $actionName = "actionIndex";
-                }
-                // в итоге получаем:
-                // имя класса:
-                // echo '<br><br>Controller name: ' . $controllerName;
-                // имя метода
-                // echo '<br>action name: ' . $actionName;
-
-                // В итоге, в массиве ($segments) останутся только параметры
-                // массив с параметрами:
-                $parameters = $segments;
-                // Определяем путь к файлу, который нужно подключить:
-                $controllerFile = ROOT . '/controller/' . $controllerName . '.php';
-
-                // проверяем: если такой файл существует, то подключаем его
-                if(file_exists($controllerFile))
-                {
-                    include_once ($controllerFile);
-                }
-                // создаем объект класса контроллера
-                $controllerObject = new $controllerName;
-
-                // для этого объекта мы вызываем метод (action)
-                // массив ($parameters) мы можем просто передать нашему экшену,
-                // используя ранее написаный код:
-                //$result = $controllerObject -> $actionName($parameters);
-
-                // используем функцию: call_user_func_array()
-                // Эта функция вызывает экшен с именем,
-                // которое содержится в переменной $actionName,
-                // у объекта - $controllerObject,
-                // при этом передает ему массив с параметрами ($parameters)
-
-                $result = call_user_func_array(array($controllerObject, $actionName), $parameters );
-
+        $controller = null;
+        if ($segments[0] == "admin") {
+            $string = str_replace("&", "?", $segments[1]);
+            switch ($string) {
+                case 'bookings':
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include_once (ROOT . '/admin/controller/BookingsController.php');
+                    $controller= new BookingsController($string);
+                    break;
+                case 'rooms':
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include_once (ROOT . '/admin/controller/RoomsController.php');
+                    $controller= new RoomsController();
+                    break;
+                case 'users':
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include_once (ROOT . '/admin/controller/UsersController.php');
+                    $controller= new UsersController($segments);
+                    break;
+                case 'services':
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include_once (ROOT . '/admin/controller/ServiceController.php');
+                    $controller= new ServiceController();
+                    break;
+                case 'payment':
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include_once (ROOT . '/admin/controller/PaymentController.php');
+                    $controller= new PaymentController();
+                    break;
+                case 'logout': // для пользователей
+                    include_once (ROOT . '/logout.php');
+                    $controller= new UsersController($segments);
+                    break;
+                case 'bookings?id='. $_GET["id"]:
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include (ROOT . '/admin/controller/BookingsController.php');
+                    $controller= new BookingsController($string);
+                    break;
+                default:
+                    break;
             }
-        }*/
+            if ($controller) {
+                $controller->processMethod();
+            }
+            else {
+                http_response_code(404);
+                echo json_encode([
+                    "message" => "404",
+                    "uri" => $this->getURI()
+                ]);
+            }
+        } else {
+            switch ($segments[0]) {
+                case 'registration': // для пользователей
+                    include(ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/controller/UsersController.php');
+                    $controller= new UsersController($segments);
+                    break;
+                case 'login': // для пользователей
+                    include(ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/controller/UsersController.php');
+                    $controller= new UsersController($segments);
+                    break;
+                case 'logout': // для пользователей
+                    include(ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/logout.php');
+                    $controller= new UsersController($segments);
+                    break;
+                case 'mybookings':
+                    include(ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/controller/BookingsController.php');
+                    $controller= new BookingsController();
+                    break;
+                case 'book': // для пользователей
+                    include_once (ROOT . '/controller/BookController.php');
+                    $controller= new BookController();
+                    break;
+                case 'rooms':
+                    include(ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/controller/RoomsController.php');
+                    $controller= new RoomsController();
+                    break;
+                case 'services':
+                    include(ROOT . '/view/shared/header.php');
+                    include_once (ROOT . '/controller/ServiceController.php');
+                    $controller= new ServiceController();
+                    break;
+
+                default:
+                    include(ROOT . '/view/shared/header.php');
+                    break;
+            }
+            if ($controller) {
+                $controller->processMethod();
+            }
+            else {
+                http_response_code(404);
+                echo json_encode([
+                    "message" => "404",
+                    "uri" => $this->getURI()
+                ]);
+            }
+        }
     }
 
     private function getURI()
     {
         if(!empty($_SERVER['REQUEST_URI']))
         {
-            $uri = explode('=', $_SERVER['REQUEST_URI']);
+            $uri = explode('q=', $_SERVER['REQUEST_URI']);
             // trim - удаляет пробелы или другие символы из начала и конца строки
             return rtrim(trim($uri[1], '/'), '&');
         }
     }
 }
-/*
-$controller_name = 'main';
-$action_name = 'index';
-
-$routes = explode('/', $_SERVER['REQUEST_URI']);
-
-// получаем имя контроллера
-if ( !empty($routes[1]) )
-{
-    $controller_name = $routes[1];
-}
-
-// получаем имя экшена
-if ( !empty($routes[2]) )
-{
-    $action_name = $routes[2];
-}
-
-// добавляем префиксы
-$model_name = 'model_'.$controller_name;
-$controller_name = 'controller_'.$controller_name;
-$action_name = 'action_'.$action_name;
-
-/*
-echo "Model: $model_name <br>";
-echo "Controller: $controller_name <br>";
-echo "Action: $action_name <br>";
-
-
-// подцепляем файл с классом модели (файла модели может и не быть)
-
-$model_file = strtolower($model_name).'.php';
-$model_path = "application/model/".$model_file;
-if(file_exists($model_path))
-{
-    include "application/model/".$model_file;
-}
-
-// подцепляем файл с классом контроллера
-$controller_file = strtolower($controller_name).'.php';
-$controller_path = "application/controller/".$controller_file;
-if(file_exists($controller_path))
-{
-    include "application/controller/".$controller_file;
-}
-else
-{
-    include "application/view/shared/error.php";
-}
-
-// создаем контроллер
-$controller = new $controller_name;
-$action = $action_name;
-
-if(method_exists($controller, $action))
-{
-    // вызываем действие контроллера
-    $controller->$action();
-}
-else
-{
-    include "application/view/shared/error.php";
-}*/
-

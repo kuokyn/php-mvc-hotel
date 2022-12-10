@@ -4,20 +4,21 @@ include_once(ROOT . '/admin/model/User.php');
 
 class UsersController
 {
-    private $uri;
-    public function __construct($uri) {
-        $this->uri = $uri;
-    }
+
     public function processMethod()
     {
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if ($this->uri[0] == "login")
-                    include_once (ROOT . '/view/login.php');
-                if ($this->uri[0] == "registration")
-                    include_once (ROOT . '/view/registration.php');
+                if (!isset($_GET["phone"])) {
+                    $result = User::getUserList();
+                } else {
+                    $result = User::getUserByPhone($_GET["phone"]);
+                }
+                echo json_encode($result);
                 break;
+
             case 'POST':
+                
                 if ($_POST["action"] == "create" && isset($_POST["phone"]) && isset($_POST["name"]) && isset($_POST["surname"]) && isset($_POST["password"]) && isset($_POST["email"])) {
                     $user = $this->createUser();
                     if ($user) {
@@ -32,9 +33,8 @@ class UsersController
                             "message" => "User was NOT created because of database error"
                         ]);
                     }
-                } else if (isset($_POST["action"]) && isset($_POST["phone"]) && isset($_POST["password"])) {
-//                    include_once (ROOT . 'view/login.php');
-                    $this->loginUser($_POST["phone"], $_POST["password"]);
+                } else if ($_POST["action"] == "login" && isset($_POST["phone"]) && isset($_POST["password"])) {
+                    $this->loginUser($_POST["phone"],$_POST["password"]);
                 }
                 else {
                     echo json_encode([
@@ -44,6 +44,7 @@ class UsersController
                 break;
 
             case 'PUT':
+                
                 if ($_GET["phone"] == $_POST["phone"] && isset($_GET["phone"])) {
                     if (isset($_POST["name"]) && isset($_POST["surname"]) && isset($_POST["password"]) && isset($_POST["email"])) {
                         $user = $this->updateUser();

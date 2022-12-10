@@ -12,13 +12,12 @@ services:
       - mysql
 
   web:
-    image: nginx
+    build: ./config
     container_name: web-server
     ports:
       - 80:80
-    working_dir: /var/www/html
     volumes:
-      - ./application:/var/www/html
+      - ./application/view/css:/var/www/html
       - ./config/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - apache

@@ -4,39 +4,74 @@ include_once(ROOT . '/admin/model/Booking.php');
 include_once(ROOT . '/admin/model/User.php');
 class BookingsController
 {
-
+    private $uri;
+    public function __construct($uri) {
+        $this->uri = $uri;
+    }
     public function processMethod()
     {
-        
         $isSet = isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"]);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
+                if ($this->uri == "bookings") {
                     $result = Booking::getBookingList();
-                }
-                else if (isset($_SESSION["login"])) {
-                    $result = $this->getMyBookings($_SESSION["login"]);
+                    include_once (ROOT . '/admin/view/booking/booking_list.php');
                 }
                 else {
-                    $result = Booking::getBookingById($_GET["id"]);
+                    $booking = Booking::getBookingById($_GET["id"]);
+                    include_once(ROOT . '/admin/view/booking/booking.php');
                 }
-                echo json_encode($result);
                 break;
-
             case 'POST':
-                if ($isSet) {
-                    $booking = $this->createBooking();
-                    if ($booking) {
-                        http_response_code(201);
-                        echo json_encode([
-                            "message" => "Booking ". $booking->{'id'}. " was created",
-                            "created" => $booking
-                        ]);
-                    }
-                    else {
-                        echo json_encode([
-                            "message" => "Booking was NOT created, database error"
-                        ]);
+                if (isset($_POST["action"])) {
+                    if ($_POST["action"] == "delete") {
+                        $id = $_POST["id"];
+                        $deleted = Booking::deleteBooking($id);
+                        if ($deleted) {
+                            echo json_encode([
+                                "message" => "Booking $id was deleted",
+                                "deleted" => $deleted
+                            ]);
+                        } else {
+                            echo json_encode([
+                                "message" => "Booking $id was NOT deleted",
+                                "deleted" => $deleted
+                            ]);
+                        }
+                    } else if ($_POST["action"]=="update") {
+                        $booking = $this->updateBooking();
+                        if ($booking) {
+                            http_response_code(201);
+                            echo json_encode([
+                                "message" => "Booking " . $_POST['id'] . " was updated",
+                                "updated" => $booking
+                            ]);
+                        } else {
+                            echo json_encode([
+                                "message" => "Booking " . $_POST['id'] . " was NOT updated",
+                                "updated" => $booking
+                            ]);
+                        }
+                    } else if ($_POST["action"]=="create") {
+                        if ($isSet) {
+                            $booking = $this->createBooking();
+                            if ($booking) {
+                                http_response_code(201);
+                                echo json_encode([
+                                    "message" => "Booking ". $booking['id']. " was created",
+                                    "created" => $booking
+                                ]);
+                            }
+                            else {
+                                echo json_encode([
+                                    "message" => "Booking was NOT created, database error"
+                                ]);
+                            }
+                        } else {
+                            echo json_encode([
+                                "message" => "Booking was NOT created, not enough params"
+                            ]);
+                        }
                     }
                 } else {
                     echo json_encode([
@@ -44,7 +79,6 @@ class BookingsController
                     ]);
                 }
                 break;
-
             case 'PUT':
                 if ($_GET["id"] == $_POST["id"] && isset($_GET["id"])) {
                     if ($isSet) {
@@ -75,15 +109,15 @@ class BookingsController
                 break;
             case 'DELETE':
                 $id = $_GET["id"];
-                $deleted = Room::deleteRoom($id);
+                $deleted = Booking::deleteBooking($id);
                 if ($deleted) {
                     echo json_encode([
-                        "message" => "Room $id was NOT deleted",
+                        "message" => "Booking $id was NOT deleted",
                         "deleted" => $deleted
                     ]);
                 } else {
                     echo json_encode([
-                        "message" => "Room $id was deleted",
+                        "message" => "Booking $id was deleted",
                         "deleted" => $deleted
                     ]);
                 }
@@ -124,8 +158,7 @@ class BookingsController
         return Booking::updateBooking($id, $room_id, $user_id, $check_in_date, $check_out_date, $people);
     }
 
-    public function getMyBookings($login) {
-        $user = User::getUserByPhone($login);
-        return Booking::getBookingsByUserId($user["id"]);
+    public function getBooking($id) {
+        return Booking::getBookingById($id);
     }
 }

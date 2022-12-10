@@ -1,8 +1,8 @@
 <?php
 
 include_once(ROOT . '/admin/model/Booking.php');
-include_once(ROOT . '/admin/model/User.php');
-class BookingsController
+
+class BookController
 {
 
     public function processMethod()
@@ -11,16 +11,7 @@ class BookingsController
         $isSet = isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"]);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
-                    $result = Booking::getBookingList();
-                }
-                else if (isset($_SESSION["login"])) {
-                    $result = $this->getMyBookings($_SESSION["login"]);
-                }
-                else {
-                    $result = Booking::getBookingById($_GET["id"]);
-                }
-                echo json_encode($result);
+
                 break;
 
             case 'POST':
@@ -122,10 +113,5 @@ class BookingsController
         $room_id= $_POST["room_id"];
         $user_id = $_POST["user_id"];
         return Booking::updateBooking($id, $room_id, $user_id, $check_in_date, $check_out_date, $people);
-    }
-
-    public function getMyBookings($login) {
-        $user = User::getUserByPhone($login);
-        return Booking::getBookingsByUserId($user["id"]);
     }
 }

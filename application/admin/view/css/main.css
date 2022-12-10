@@ -67,12 +67,20 @@ nav {
   left: 0;
   height: auto;
   background-color: #346ab9;
-  min-width: 16rem;
+  width: 16rem;
   padding: 1.8rem 0.85rem;
   color: #fff;
   display: flex;
   flex-direction: column;
   transition: width 0.5s ease-in-out;
+}
+nav::before {
+  content: "";
+  position: absolute;
+  width: 2rem;
+  height: 100%;
+  top: 0;
+  left: 100%;
 }
 main {
   color: #1f2027;
