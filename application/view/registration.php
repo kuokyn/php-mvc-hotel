@@ -12,7 +12,7 @@ echo '<section>
         <label for="email">Почта</label>
         <input type="text" id="email" name="email" required>
         <label for="password">Пароль</label>
-        <input type="text" id="password" name="password" required>
-        <button>Submit</button>
+        <input type="text" id="password" name="password" required><br>
+        <button class="btn">Зарегистрироваться</button>
     </form>
 </section>';

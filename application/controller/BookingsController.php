@@ -11,16 +11,18 @@ class BookingsController
         $isSet = isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"]);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
+               /* if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
                     $result = Booking::getBookingList();
                 }
-                else if (isset($_SESSION["login"])) {
+                else */
+                if (isset($_SESSION["login"])) {
                     $result = $this->getMyBookings($_SESSION["login"]);
+                    include_once (ROOT . '/view/booking/booking_list.php');
                 }
                 else {
                     $result = Booking::getBookingById($_GET["id"]);
                 }
-                echo json_encode($result);
+//                echo json_encode($result);
                 break;
 
             case 'POST':

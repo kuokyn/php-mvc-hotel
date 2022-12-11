@@ -4,22 +4,89 @@ include_once(ROOT . '/admin/model/User.php');
 
 class UsersController
 {
-
+    private $uri;
+    public function __construct($uri) {
+        $this->uri = $uri;
+    }
     public function processMethod()
     {
+        $isSet = isset($_POST["email"]) && isset($_POST["phone"]) && isset($_POST["password"]) && isset($_POST["name"]) && isset($_POST["surname"]);
+//        echo json_encode($this->uri);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["phone"])) {
+                if ($this->uri == "users") {
                     $result = User::getUserList();
-                } else {
-                    $result = User::getUserByPhone($_GET["phone"]);
+                    include_once(ROOT . '/admin/view/users/user_list.php');
                 }
-                echo json_encode($result);
+                else {
+                    $user = User::getUserByPhone($_GET["id"]);
+                    include_once(ROOT . '/admin/view/users/user.php');
+                }
+                /*if (!isset($_GET["phone"])) {
+                    $result = User::getUserList();
+                    include_once(ROOT . '/admin/view/users/user_list.php');
+                }*/
+//                echo json_encode($result);
                 break;
 
             case 'POST':
-                
-                if ($_POST["action"] == "create" && isset($_POST["phone"]) && isset($_POST["name"]) && isset($_POST["surname"]) && isset($_POST["password"]) && isset($_POST["email"])) {
+                if (isset($_POST["action"])) {
+                    if ($_POST["action"] == "delete") {
+                        $id = $_POST["id"];
+                        $deleted = User::deleteUser($id);
+                        if ($deleted) {
+                            echo json_encode([
+                                "message" => "User $id was deleted",
+                                "deleted" => $deleted
+                            ]);
+                        } else {
+                            echo json_encode([
+                                "message" => "User $id was NOT deleted",
+                                "deleted" => $deleted
+                            ]);
+                        }
+                    } else if ($_POST["action"] == "update") {
+                        $user = $this->updateUser();
+                        if ($user) {
+                            http_response_code(201);
+                            echo json_encode([
+                                "message" => "User " . $_POST['id'] . " was updated",
+                                "updated" => $user
+                            ]);
+                        } else {
+                            echo json_encode([
+                                "message" => "User " . $_POST['id'] . " was NOT updated",
+                                "updated" => $user
+                            ]);
+                        }
+                    } else if ($_POST["action"] == "login" && isset($_POST["phone"]) && isset($_POST["password"])) {
+                        $this->loginUser($_POST["phone"], $_POST["password"]);
+                    } else if ($_POST["action"] == "create") {
+                        if ($isSet) {
+                            $user = $this->createUser();
+                            if ($user) {
+                                http_response_code(201);
+                                echo json_encode([
+                                    "message" => "User " . $user['id'] . " was created",
+                                    "created" => $user
+                                ]);
+                            } else {
+                                echo json_encode([
+                                    "message" => "User was NOT created, database error"
+                                ]);
+                            }
+                        } else {
+                            echo json_encode([
+                                "message" => "User was NOT created, not enough params"
+                            ]);
+                        }
+                    }
+                } else {
+                    echo json_encode([
+                        "message" => "User was NOT created, not enough params"
+                    ]);
+                }
+                /*if ($_POST["action"] == "create" && isset($_POST["phone"]) && isset($_POST["name"]) && isset($_POST["surname"]) && isset($_POST["password"]) && isset($_POST["email"])) {
                     $user = $this->createUser();
                     if ($user) {
                         http_response_code(201);
@@ -40,13 +107,11 @@ class UsersController
                     echo json_encode([
                         "message" => "User was NOT created because not enough parameters"
                     ]);
-                }
+                }*/
                 break;
 
             case 'PUT':
-                
-                if ($_GET["phone"] == $_POST["phone"] && isset($_GET["phone"])) {
-                    if (isset($_POST["name"]) && isset($_POST["surname"]) && isset($_POST["password"]) && isset($_POST["email"])) {
+                if ($_GET["phone"] == $_POST["phone"] && $isSet) {
                         $user = $this->updateUser();
                         if ($user) {
                             echo json_encode([
@@ -64,12 +129,11 @@ class UsersController
                             "message" => "User " . $_GET["phone"] . " was NOT updated, not enough arguments"
                         ]);
                     }
-                }
-                else {
+                /*} else {
                     echo json_encode([
                         "message" => "User " . $_POST['phone'] . " was NOT updated, phone in query and body does not match"
                     ]);
-                }
+                }*/
                 break;
             case 'DELETE':
                 $phone = $_GET["phone"];
@@ -123,9 +187,10 @@ class UsersController
         }
     }
 
-    public function loginUser($login, $password) {
+    public function loginUser($login, $password)
+    {
         $user = User::getUserByPhone($login);
-        if ($user['password']== $password) {
+        if ($user['password'] == $password) {
             $_SESSION["loggedIn"] = TRUE;
             $_SESSION["login"] = $login;
             echo json_encode([

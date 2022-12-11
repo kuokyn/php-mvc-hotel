@@ -4,7 +4,6 @@ include_once(ROOT . '/admin/model/Service.php');
 
 class ServiceController
 {
-
     public function processMethod()
     {
         switch ($_SERVER["REQUEST_METHOD"]) {
@@ -17,9 +16,7 @@ class ServiceController
                 }
                 echo json_encode($result);
                 break;
-
             case 'POST':
-                
                 if (isset($_POST["title"]) && isset($_POST["price"]) && isset($_POST["description"])) {
                     $service = $this->createService();
                     if ($service) {
@@ -40,9 +37,7 @@ class ServiceController
                     ]);
                 }
                 break;
-
             case 'PUT':
-                
                 if ($_GET["title"] == $_POST["title"] && isset($_GET["title"])) {
                     if (isset($_POST["description"]) && isset($_POST["price"])) {
                         $user = $this->updateService();

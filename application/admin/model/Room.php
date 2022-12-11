@@ -29,7 +29,9 @@ class Room
     static function getRoomList()
     {
         global $db;
-        $query = "SELECT * FROM room";
+        $query = "SELECT id, chambers, people, room_type_title, room_type.price FROM room
+                    JOIN room_type ON room_type.title=room_type_title
+                    ORDER BY id";
         $result = mysqli_query($db, $query);
         return $result->fetch_all(MYSQLI_ASSOC);
     }

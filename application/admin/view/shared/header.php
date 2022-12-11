@@ -6,6 +6,11 @@
     <title>MVC</title>
     <link rel='stylesheet' href="../main.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css">
+    <style>
+        td , th{
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 <main style="display:flex;">
@@ -43,6 +48,15 @@
                             <i class='bx bxs-folder'></i>
                         </div>
                         <span class="link hide">Пользователи</span>
+                    </a>
+                </li>
+                <li class="tooltip-element" data-tooltip="1">
+                    <a href="/admin/payment" data-active="1">
+                        <div class="icon">
+                            <i class='bx bx-folder'></i>
+                            <i class='bx bxs-folder'></i>
+                        </div>
+                        <span class="link hide">Учёт</span>
                     </a>
                 </li>
             </ul>

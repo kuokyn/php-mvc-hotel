@@ -2,7 +2,6 @@
 
 class Booking
 {
-
     static function getBookingById($id)
     {
         global $db;

@@ -15,7 +15,7 @@ class RoomsController
                 else {
                     $result = Room::getRoomById($_GET["id"]);
                 }
-                echo json_encode($result);
+                include_once (ROOT . '/admin/view/rooms/room_list.php');
                 break;
 
             case 'POST':

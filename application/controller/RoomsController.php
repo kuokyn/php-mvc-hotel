@@ -1,6 +1,6 @@
 <?php
 
-include_once(ROOT . '/admin/model/Room.php');
+include_once(ROOT . '/model/Room.php');
 
 class RoomsController
 {
@@ -12,10 +12,7 @@ class RoomsController
                 if (!isset($_GET["id"])) {
                     $result = Room::getRoomList();
                 }
-                else {
-                    $result = Room::getRoomById($_GET["id"]);
-                }
-                echo json_encode($result);
+                include_once (ROOT . '/view/rooms/room_list.php');
                 break;
 
             case 'POST':

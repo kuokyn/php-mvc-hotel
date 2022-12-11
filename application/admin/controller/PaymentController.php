@@ -9,9 +9,11 @@ class PaymentController
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
                 $result = Payment::getPaymentList();
-                echo json_encode($result);
+//                echo json_encode($result);
+                include_once (ROOT . '/admin/view/payment.php');
+
                 break;
-            case 'POST':
+            /*case 'POST':
                 
                 if (isset($_POST["people"]) && isset($_POST["check_in_date"]) && isset($_POST["check_out_date"]) && isset($_POST["user_id"]) && isset($_POST["room_id"])) {
                     $booking = $this->createBooking();
@@ -79,34 +81,35 @@ class PaymentController
                 http_response_code(405);
                 header("Allow: GET, POST, PUT, DELETE");
                 break;
+        }*/
         }
     }
 
-    public function createBooking()
+    public function createPayment()
     {
         $people = $_POST["people"];
         $time = strtotime($_POST["check_in_date"]);
-        $newformat = date('Y-m-d h:i:s',$time);
+        $newformat = date('Y-m-d h:i:s', $time);
         $check_in_date = $newformat;
         $time = strtotime($_POST["check_out_date"]);
-        $newformat = date('Y-m-d h:i:s',$time);
+        $newformat = date('Y-m-d h:i:s', $time);
         $check_out_date = $newformat;
-        $room_id= $_POST["room_id"];
+        $room_id = $_POST["room_id"];
         $user_id = $_POST["user_id"];
         return Booking::createBooking($room_id, $user_id, $check_in_date, $check_out_date, $people);
     }
 
-    public function updateBooking()
+    public function updatePayment()
     {
-        $id=$_POST["id"];
-        $people =$_POST["people"];
+        $id = $_POST["id"];
+        $people = $_POST["people"];
         $time = strtotime($_POST["check_in_date"]);
-        $newformat = date('Y-m-d h:i:s',$time);
+        $newformat = date('Y-m-d h:i:s', $time);
         $check_in_date = $newformat;
         $time = strtotime($_POST["check_out_date"]);
-        $newformat = date('Y-m-d h:i:s',$time);
+        $newformat = date('Y-m-d h:i:s', $time);
         $check_out_date = $newformat;
-        $room_id= $_POST["room_id"];
+        $room_id = $_POST["room_id"];
         $user_id = $_POST["user_id"];
         return Booking::updateBooking($id, $room_id, $user_id, $check_in_date, $check_out_date, $people);
     }

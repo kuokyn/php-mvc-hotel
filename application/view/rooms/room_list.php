@@ -1,15 +1,14 @@
-<?php include(ROOT . "/view/shared/header.php") ?>
+<h2>Список доступных номеров</h2>
 <?php if ($result) { ?>
     <section>
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>id</th>
-                <th>chambers</th>
-                <th>people</th>
-                <th>room_type_title</th>
-                <th>update</th>
-                <th>delete</th>
+                <th>Номер</th>
+                <th>Кол-во комнат</th>
+                <th>Кол-во человек</th>
+                <th>Тип</th>
+                <th>Цена за стуки</th>
             </tr>
             </thead>
             <?php foreach ($result as $res) {
@@ -18,16 +17,8 @@
                        <td>' . $res["id"] . "</td>
                        <td>" . $res["chambers"] . "</td>
                        <td>" . $res["people"] . "</td>
-                       <td>" . $res["room_type_title"] . '</td>
-                       
-                       <td>
-                           <form class="delete" action="RouterAdmin.php" method="GET">
-                           <input type="hidden" name="controller" value="users">
-                           <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="phone"
-                                   value="' . $res["id"] . '">
-                           <button class="red">delete</button></form>
-                       </td>
+                       <td>" . $res["room_type_title"] . "</td>
+                       <td>" . $res["price"] . '$</td>
                     </tr>
                   </tbody>';
             }

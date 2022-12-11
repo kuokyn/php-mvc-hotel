@@ -13,13 +13,13 @@ echo '<section>
         <label for="room_id">ID номера</label>
         <input type="text" id="room_id" name="room_id" value="'.$booking["room_id"].'" required>
         <label for="user_id">ID пользователя</label>
-        <input type="text" id="user_id" name="user_id" value="'.$booking["user_id"].'" required>
-        <button>Submit</button>
+        <input type="text" id="user_id" name="user_id" value="'.$booking["user_id"].'" required><br>
+        <button class="btn">Обновить</button>
     </form>
     <form action="/admin/bookings" method="POST">
     <input type="hidden" id="id" name="id" value="'.$booking["id"].'">
     <input type="hidden" name="action" value="delete">
-        <button>Удалить</button>
+        <button class="btn red">Удалить</button>
     </form>
     <a href="/admin/bookings">Назад</a>
 </section>';

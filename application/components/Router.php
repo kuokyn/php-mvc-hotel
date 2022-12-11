@@ -1,10 +1,6 @@
 <?php
 
 class Router {
-    public function __construct() {
-        $routesPath = ROOT . '/components/routes.php';
-    }
-
     // метод будет принимать управление от фронтконтроллера
     public function run()
     {
@@ -27,7 +23,7 @@ class Router {
                 case 'users':
                     include(ROOT . '/admin/view/shared/header.php');
                     include_once (ROOT . '/admin/controller/UsersController.php');
-                    $controller= new UsersController($segments);
+                    $controller= new UsersController($string);
                     break;
                 case 'services':
                     include(ROOT . '/admin/view/shared/header.php');
@@ -47,6 +43,11 @@ class Router {
                     include(ROOT . '/admin/view/shared/header.php');
                     include (ROOT . '/admin/controller/BookingsController.php');
                     $controller= new BookingsController($string);
+                    break;
+                case 'users?id='. $_GET["id"]:
+                    include(ROOT . '/admin/view/shared/header.php');
+                    include (ROOT . '/admin/controller/UsersController.php');
+                    $controller= new UsersController($string);
                     break;
                 default:
                     break;
@@ -114,6 +115,7 @@ class Router {
             }
         }
     }
+
 
     private function getURI()
     {
